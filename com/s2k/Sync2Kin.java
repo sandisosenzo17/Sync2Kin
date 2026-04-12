@@ -2,6 +2,7 @@ package com.s2k;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -63,8 +64,14 @@ public class Sync2Kin {
             if(event.kind() == StandardWatchEventKinds.OVERFLOW) continue;
             
             @SuppressWarnings("unchecked")
-            WatchEvent<Path> ev = (WatchEvent<Path>) event;k
+            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+            Path file_info = (Path)key.watchable();
+            System.out.println("[" + ev.kind().name() + "] "
+                                + ev.context() + " "
+                                + Files.size(file_info.resolve(ev.context())) + "B");
           }
+          
+          if(!key.reset()) break;
           
         } catch (InterruptedException e) {
           e.printStackTrace();
