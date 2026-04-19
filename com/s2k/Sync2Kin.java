@@ -9,6 +9,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,13 +60,19 @@ public class Sync2Kin {
           // Gather specified changes to the monitored folders
           WatchKey key = ws.take();
           
+          System.out.println(LocalDateTime.now());
+          
           // Process all events in the watchkey
           for(WatchEvent<?> event : key.pollEvents()) {
             if(event.kind() == StandardWatchEventKinds.OVERFLOW) continue;
             
             @SuppressWarnings("unchecked")
             WatchEvent<Path> ev = (WatchEvent<Path>) event;
+            
+            // Track the file with changes and its path
             Path file_info = (Path)key.watchable();
+            
+            // Obtain the name of the event, and the affected file with its size
             System.out.println("[" + ev.kind().name() + "] "
                                 + ev.context() + " "
                                 + Files.size(file_info.resolve(ev.context())) + "B");
