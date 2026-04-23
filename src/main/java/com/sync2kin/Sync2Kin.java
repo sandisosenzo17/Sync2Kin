@@ -1,4 +1,4 @@
-package com.s2k;
+package com.sync2kin;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
