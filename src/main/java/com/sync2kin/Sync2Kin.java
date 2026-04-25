@@ -72,10 +72,11 @@ public class Sync2Kin {
             // Track the file with changes and its path
             Path file_info = (Path)key.watchable();
             
+            String[] filesize_format = sk.getFileSize(file_info.resolve(ev.context()));
             // Obtain the name of the event, and the affected file with its size
             System.out.println("[" + ev.kind().name() + "] "
                                 + ev.context() + " "
-                                + Files.size(file_info.resolve(ev.context())) + "B");
+                                + filesize_format[0] + filesize_format[1]);
           }
           
           if(!key.reset()) break;
@@ -90,9 +91,30 @@ public class Sync2Kin {
     }
   }
 
-	private String createFolder(String f_name) {
-		
-		
-		return "";
+  // Retrive and format the file size
+	private String[] getFileSize(Path file_path) {
+	  String[] file_info = new String[2];
+	  try {
+      long file_size = Files.size(file_path);
+      
+      if(file_size > 999 && file_size < 999999) {
+        // File size is in KiloBytes
+        file_info[0] = Long.toString(file_size / 1000);
+        file_info[1] = "kB";
+      }else if(file_size > 999999 && file_size < 999999999) {
+        // File size is in MegaBytes
+        file_info[0] = Long.toString(file_size / 1000000);
+        file_info[1] = "MB";
+      }else {
+        // File size of Bytes, GigaBytes and greater
+        file_info[0] = Long.toString(file_size);
+        file_info[1] = "B";
+      }
+    } catch (IOException ioe) {
+      System.out.println("Filesize retrieval error: " + ioe.getMessage());
+    }
+	  
+	  return file_info;
 	}
+
 }
