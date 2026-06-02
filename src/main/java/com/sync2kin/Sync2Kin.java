@@ -1,5 +1,6 @@
 package com.sync2kin;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -25,9 +26,34 @@ public class Sync2Kin {
 	public Sync2Kin() {
 		this.parent_folder = "C:\\Sync2Kin";
 		this.folders = new HashMap<>();
-		this.folders.put("gd", parent_folder + "\\GDrive");
-		this.folders.put("db", parent_folder + "\\DBox");
-		this.folders.put("nt", parent_folder + "\\Network");
+		this.folders.put("rt", parent_folder);
+		this.folders.put("dv", parent_folder + "\\Devices");
+		this.folders.put("gd", parent_folder + "\\GoogleDrive");
+		this.folders.put("db", parent_folder + "\\DropBox");
+		this.folders.put("od", parent_folder + "\\OneDrive");
+		
+		createFolder();
+		
+	}
+	
+	private void createFolder() {
+	  
+	  for(Map.Entry<String, String> folder : this.folders.entrySet()) {
+	    // Parent folder will be created by subfolders
+	    if(folder.getKey().equals("rt")) continue;
+	    
+	    // Create folders that don't exist
+	    Path dir = Paths.get(folder.getValue());
+	    if(Files.notExists(dir)) {
+	      try {
+          Files.createDirectories(dir);
+        } catch (IOException ioe) {
+          System.out.println("Folder creation failed: " + ioe.getMessage());
+        }
+	    }
+	    
+	  }
+	  
 	}
 	
 	
@@ -86,7 +112,7 @@ public class Sync2Kin {
       }
       
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      System.out.println("WatchService initialisation error: " + ioe.getMessage());
     }
   }
 
