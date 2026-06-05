@@ -39,10 +39,10 @@ public class Sync2Kin {
 	private void createFolder() {
 	  
 	  for(Map.Entry<String, String> folder : this.folders.entrySet()) {
-	    // Parent folder will be created by subfolders
+	    // Parent folder will be created by subfolders so do not process it
 	    if(folder.getKey().equals("rt")) continue;
 	    
-	    // Create folders that don't exist
+	    // Create the folders if they do not exist
 	    Path dir = Paths.get(folder.getValue());
 	    if(Files.notExists(dir)) {
 	      try {
@@ -56,22 +56,31 @@ public class Sync2Kin {
 	  
 	}
 	
+	// Delete unwanted files from the folders to reduce file duplication in storage
+	public void deleteFile(Path file_path) {
+	  try {
+      Files.deleteIfExists(file_path);
+    } catch (IOException ioe) {
+      System.out.println("Error deleting a file: " + ioe.getMessage());
+    }
+	}
+	
 	
 	public static void main(String[] args) {
 	  Sync2Kin sk = new Sync2Kin();
 	  List<Path> dir = new ArrayList<>();
 	  
-	  // Populate the List with directories
+	  // Populate the List with directory names
     for(Map.Entry<String, String> folder : sk.folders.entrySet()) {
       dir.add(Paths.get(folder.getValue()));
     }
     
-    try(WatchService ws = FileSystems.getDefault().newWatchService()){
+    try(WatchService watchservice = FileSystems.getDefault().newWatchService()){
       if(!dir.isEmpty()) {
         
         // Allow each directory in the list to be monitored
         for(Path path : dir) {
-          path.register(ws, 
+          path.register(watchservice, 
               StandardWatchEventKinds.ENTRY_MODIFY,
               StandardWatchEventKinds.ENTRY_CREATE);
         }
@@ -84,7 +93,7 @@ public class Sync2Kin {
       while(true) {
         try {
           // Gather specified changes to the monitored folders
-          WatchKey key = ws.take();
+          WatchKey key = watchservice.take();
           
           System.out.println(LocalDateTime.now());
           
@@ -95,19 +104,20 @@ public class Sync2Kin {
             @SuppressWarnings("unchecked")
             WatchEvent<Path> ev = (WatchEvent<Path>) event;
             
-            // Track the file with changes and its path
+            // Track the file path with changes
             Path file_info = (Path)key.watchable();
             
             // Obtain the name of the event, and the affected file with its size
+            // The name of the event is obtained wirh kind().name() and the file name with context()
             System.out.println("[" + ev.kind().name() + "] "
                                 + ev.context() + " "
-                                + Files.size(file_info) + "B");
+                                + Files.size(file_info.resolve((Path) ev.context())) + "B");
           }
           
           if(!key.reset()) break;
           
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+        } catch (InterruptedException ie) {
+          System.out.println("WatchService interrupted: " + ie.getMessage());
         }
       }
       
