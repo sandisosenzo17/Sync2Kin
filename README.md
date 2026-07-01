@@ -19,12 +19,13 @@ Currently in active development. Windows desktop app (JavaFX) is the primary tar
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | File system event detection + JavaFX scaffold | 🔄 In Progress |
-| 2 | Google Drive authentication & upload | ⏳ Pending |
-| 3 | LAN device discovery | ⏳ Pending |
-| 4 | File transfer engine | ⏳ Pending |
-| 5 | LAN sync logic & deduplication | ⏳ Pending |
-| 6 | WAN support | ⏳ Pending |
+| 1 | File system event detection | ✅ Complete |
+| 2 | Google Drive authentication & upload | ✅ Complete |
+| 3 | JavaFX GUI application | 🔄 In Progress
+| 4 | LAN device discovery | ⏳ Pending |
+| 5 | File transfer engine | ⏳ Pending |
+| 6 | LAN sync logic & deduplication | ⏳ Pending |
+| 7 | WAN support | ⏳ Pending |
 
 ## Tech Stack
 
